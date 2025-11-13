@@ -6,6 +6,12 @@ show databases;
 
 use Insurance;
 
+DROP TABLE IF EXISTS PARTICIPATED;
+DROP TABLE IF EXISTS OWNS;
+DROP TABLE IF EXISTS ACCIDENT;
+DROP TABLE IF EXISTS CAR;
+DROP TABLE IF EXISTS PERSON;
+
 create table person (driver_id varchar(10),
 name varchar(20),
 address varchar(30),
@@ -102,48 +108,52 @@ INSERT INTO participated VALUES
 
 select * from participated;
 
-
 UPDATE PARTICIPATED SET damage_amount=25000
 where reg_num='KA053408'
-and report_num =12;
+and report_num=12;
 
 commit;
 select * from participated;
-
-
 
 INSERT INTO ACCIDENT VALUES
 (16,'2008-03-15','DOMLUR');
 SELECT*FROM ACCIDENT;
 
-
 SELECT accident_date,location
 from accident;
-
-
 
 select driver_id from participated
 where damage_amount>=25000;
 
-select* from car order by year asc;
+select * from car order by year asc;
 
-select count(report_num)CNT from car c,participated p where c.reg_num=p.reg_num and
+select count(report_num) CNT from car c,participated p where c.reg_num=p.reg_num and
 model='Lancer';
 
-select count(distinct driverid) CNT from participated a, accident b where a.reportno=
-b.reportno and b.adate like '%08';
+select count(distinct driver_id) CNT from participated a, accident b where a.report_num=
+b.report_num and b.accident_date like '2008%';
 
 select count(distinct driver_id) CNT from participated a, accident b where a.report_num=
-b.report_num and b.accident_date like '%08';
+b.report_num and b.accident_date like '2008%';
+
 
 SELECT * FROM PARTICIPATED ORDER BY DAMAGE_AMOUNT DESC;
 
 SELECT AVG(DAMAGE_AMOUNT) FROM PARTICIPATED;
 
-DELETE FROM PARTICIPATED WHERE DAMAGE_AMOUNT<(SELECT AVG
-(DAMAGE_AMOUNT) FROM PARTICIPATED);
+DELETE FROM PARTICIPATED
+WHERE DAMAGE_AMOUNT < (
+    SELECT avg_damage
+    FROM (
+        SELECT AVG(DAMAGE_AMOUNT) AS avg_damage
+        FROM PARTICIPATED
+    ) AS temp
+);
+select *from participated;
+
 
 SELECT NAME FROM PERSON A, PARTICIPATED B WHERE A.DRIVER_ID = B.DRIVER_ID
 AND DAMAGE_AMOUNT>(SELECT AVG(DAMAGE_AMOUNT) FROM PARTICIPATED);
+
 
 SELECT MAX(DAMAGE_AMOUNT) FROM PARTICIPATED;
